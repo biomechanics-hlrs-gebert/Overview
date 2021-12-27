@@ -60,5 +60,15 @@ All programs of my doctoral project rely on a data driven workflow. A deep-dive 
 4. ```Downscaling``` - Dataset used to prove validity compare to a high resolution scan
 5. ```SF15``` - Specific parameters (Scale factor = 15)
 
+## Centralized Sources
+
+All the repositories of this doctoral project rely on a couple of centralized sources to prevent diverging standard routines.
+
+Add them as a subtree as follows:
+
+```
+cd <repository root>
+git subtree add --prefix central_src git@github.com:biomechanics-hlrs-gebert/A-CESO-Central_Sources.git  main --squash```
+
 ## Biomechanics @ HLRS
 All of this research is conducted at the *High-Performance Computing Center Stuttgart* (HLRS) in the department of *Numerical Methods and Libraries*. 
