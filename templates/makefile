@@ -36,10 +36,13 @@ build_path = $(CURDIR)
 export build_path
 #
 # ------------------------------------------------------------------------------
-# Directories
-subtree_path= $(build_path)/central_src/
+# Directories 
+# st: "Subtree" - A git procedure to inherit another repository as some sort of
+# submodule. https://gist.github.com/SKempin/b7857a6ff6bddb05717cc17a44091202
+st_path= $(build_path)/central_src/
 #
-subtree_obj_dir = $(subtree_path)/obj/
+st_obj_dir = $(st_path)/obj/
+st_mod_dir = $(st_path)/mod/
 #
 mod_dir   = $(build_path)/mod/
 obj_dir   = $(build_path)/obj/
@@ -75,17 +78,23 @@ export compiler
 # Programming Environment - gnu, LLVM
 PE = gnu
 # ------------------------------------------------------------------------------
+# Compile mode - dev, prod
+compile_MODE = dev
+# ------------------------------------------------------------------------------
 # Compile flags GNU Compiler
+# The subtree structure requires two directories containing modules. 
+# In this case, the program root/mod directory addressed by the -J 
+# http://www.hpc.icc.ru/documentation/intel/f_ug1/fced_mod.htm
 ifeq ($(PE),gnu)
-   c_flags_f90 = -J$(mod_dir) -I$(mod_dir) \
-				-g \
-				-o \
-				-O3 \
-				-fbacktrace \
-				-fbounds-check \
-				-fbackslash \
-				-Wno-conversion \
-				-Wall
+	f90_std_IJ     = -J$(mod_dir) -I$(st_mod_dir)
+	f90_dev_flags  = -g -o -O3 -fbacktrace -fbounds-check -fbackslash -Wno-conversion -Wall
+	f90_prod_flags = -O3 -fbounds-check
+
+	ifeq ($(compile_MODE),prod)
+		c_flags_f90 = $(f90_std_IJ) $(f90_prod_flags)
+	else
+		c_flags_f90 =  $(f90_std_IJ) $(f90_dev_flags)
+	endif
 endif
 # ------------------------------------------------------------------------------
 # Executable
@@ -94,23 +103,23 @@ main_bin = $(bin_dir)$(bin_name)_$(trgt_vrsn)$(bin_suf)
 # ------------------------------------------------------------------------------
 # Generate objects
 #
-f-objects = $(subtree_obj_dir)mod_global_std$(obj_ext)\
-			$(subtree_obj_dir)mod_strings$(obj_ext)\
-			$(subtree_obj_dir)mod_messages_errors$(obj_ext) \
-			$(subtree_obj_dir)mod_meta$(obj_ext) \
+f-objects = $(st_obj_dir)mod_global_std$(obj_ext)\
+			$(st_obj_dir)mod_strings$(obj_ext)\
+			$(st_obj_dir)mod_messages_errors$(obj_ext) \
+			$(st_obj_dir)mod_meta$(obj_ext) \
 			$(obj_dir)mod_prog_specific_1$(obj_ext)\
 			$(obj_dir)mod_prog_specific_2$(obj_ext)\
 			$(obj_dir)mod_prog_specific_3$(obj_ext)\
 			$(obj_dir)main_program_file$(obj_ext)
 
 # ------------------------------------------------------------------------------
-# Build the subtree directory first
-subtree: 
-	$(MAKE) all -C $(subtree_path)
+# Build the st directory first
+st: 
+	$(MAKE) all -C $(st_path)
 
 # ------------------------------------------------------------------------------
 # Begin Building
-all: subtree $(main_bin)  
+all: st $(main_bin)  
 
 # ------------------------------------------------------------------------------
 # Module containing stuff
@@ -122,12 +131,13 @@ all: subtree $(main_bin)
 [recipe of main binary]
 
 # -----------------------------------------------------------------------------
-# Final Link step of MAIN -----------------------------------------------------
+# Final Link step of MAIN 
 $(main_bin):$(f-objects)
 	@echo "----------------------------------------------------------------------------------"
 	@echo '--- Write revision and git info'
-	@echo "CHARACTER(LEN = scl), PARAMETER :: revision = '$(trgt_vrsn)'" > $(f-src_dir)include_f90/revision_meta$(f90_ext)
-	@echo "CHARACTER(LEN = scl), PARAMETER :: hash = '$(rev)'" >> $(f-src_dir)include_f90/revision_meta$(f90_ext)
+	@echo "CHARACTER(LEN=scl), PARAMETER :: longname = '$(long_name)'" > $(f-src_dir)include_f90/revision_meta$(f90_ext)
+	@echo "CHARACTER(LEN=scl), PARAMETER :: revision = '$(trgt_vrsn)'" >> $(f-src_dir)include_f90/revision_meta$(f90_ext)
+	@echo "CHARACTER(LEN=scl), PARAMETER :: hash = '$(rev)'" >> $(f-src_dir)include_f90/revision_meta$(f90_ext)
 	@echo "----------------------------------------------------------------------------------"
 	@echo '--- Final link step of $(long_name) executable'
 	@echo "----------------------------------------------------------------------------------"
@@ -140,9 +150,10 @@ $(main_bin):$(f-objects)
 help:
 	@echo "----------------------------------------------------------------------------------"
 	@echo "$(long_name) make targets"
-	@echo "Regular:       »make (all)«   - Build the $(long_name)"
-	@echo "Cleaning:      »make clean«   - Remove generated files, keep the config"
-	@echo "Documentation: »make docs     - Build the html and the tex documentation"
+	@echo "Regular:  »make (all)«    - Build the $(long_name)"
+	@echo "Cleaning: »make clean«    - Remove build files, keep the central_src"
+	@echo "Cleaning: »make cleanall« - Remove all build files."
+	@echo "Docs:     »make docs      - Build the html and the tex documentation."
 	@echo "----------------------------------------------------------------------------------"
 
 docs: 
@@ -176,11 +187,15 @@ clean:
 	@echo "----------------------------------------------------------------------------------"
 	@echo "-- Cleaning object directory"
 	@echo "----------------------------------------------------------------------------------"
-	$(clean_cmd) $(f-objects)
+	$(clean_cmd) $(obj_dir)*$(obj_ext)
 	@echo "----------------------------------------------------------------------------------"
 	@echo "-- Cleaning MAIN binary"
 	@echo "----------------------------------------------------------------------------------"
 	$(clean_cmd) $(main_bin)
+	
+cleanall: clean
 	@echo "----------------------------------------------------------------------------------"
-	@echo "-- Cleaning completed."
+	@echo "-- Cleaning central_src st"
 	@echo "----------------------------------------------------------------------------------"
+	$(MAKE) clean -C $(st_path)
+
