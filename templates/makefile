@@ -46,6 +46,7 @@ st_path= $(build_path)/central_src/
 #
 st_obj_dir = $(st_path)/obj/
 st_mod_dir = $(st_path)/mod/
+st_f-src_dir = $(st_path)/f-src/
 #
 mod_dir   = $(build_path)/mod/
 obj_dir   = $(build_path)/obj/
