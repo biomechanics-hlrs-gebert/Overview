@@ -13,9 +13,12 @@ long_name="Some Programm Foo Bar"
 # ------------------------------------------------------------------------------
 ifeq ($(PROVIDES_GIT),YES)
 # Get git hash https://jblevins.org/log/vc
+# rev = $(shell git describe --tags --always)
 	rev = $(shell git rev-parse HEAD)
+	trgt_vrsn = $(shell git describe --tags --abbrev=0)
 else
 	rev = NO_GIT_REPOSITORY
+	trgt_vrsn = ""
 endif
 # -----------------------------------------------------------------------------
 # Check for environment
@@ -130,16 +133,21 @@ all: st $(main_bin)
 # Main object 
 [recipe of main binary]
 
+# --------------------------------------------------------------------------------------------------
+# Export revision
+export_revision:
+	@echo "----------------------------------------------------------------------------------"
+	@echo '-- Write revision and git info'
+	@echo "CHARACTER(LEN=scl), PARAMETER :: longname = '$(long_name)'" > $(st_f-src_dir)include_f90/revision_meta$(f90_ext)
+	@echo "CHARACTER(LEN=scl), PARAMETER :: revision = '$(trgt_vrsn)'" >> $(st_f-src_dir)include_f90/revision_meta$(f90_ext)
+	@echo "CHARACTER(LEN=scl), PARAMETER :: hash = '$(rev)'" >> $(st_f-src_dir)include_f90/revision_meta$(f90_ext)
+	@echo "----------------------------------------------------------------------------------"
+
 # -----------------------------------------------------------------------------
 # Final Link step of MAIN 
-$(main_bin):$(f-objects)
+$(main_bin): export_revision $(f-objects)
 	@echo "----------------------------------------------------------------------------------"
-	@echo '--- Write revision and git info'
-	@echo "CHARACTER(LEN=scl), PARAMETER :: longname = '$(long_name)'" > $(f-src_dir)include_f90/revision_meta$(f90_ext)
-	@echo "CHARACTER(LEN=scl), PARAMETER :: revision = '$(trgt_vrsn)'" >> $(f-src_dir)include_f90/revision_meta$(f90_ext)
-	@echo "CHARACTER(LEN=scl), PARAMETER :: hash = '$(rev)'" >> $(f-src_dir)include_f90/revision_meta$(f90_ext)
-	@echo "----------------------------------------------------------------------------------"
-	@echo '--- Final link step of $(long_name) executable'
+	@echo '-- Final link step of $(long_name) executable'
 	@echo "----------------------------------------------------------------------------------"
 	$(compiler) $(f-objects) -o $(main_bin)
 	@echo
