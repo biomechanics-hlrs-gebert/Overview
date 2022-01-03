@@ -2,9 +2,9 @@
 # ----------------------------------------------------------------------------------------
 # Open-MPI download, build and install script.
 #
-# Author:          Johannes Gebert «gebert@hlrs.de»
-# Created: on :    08.09.2020
-# Last edit:       07.04.2021
+# Author:     Johannes Gebert gebert@hlrs.de
+# Created on: 08.09.2020
+# Last edit:  03.01.2022
 # ----------------------------------------------------------------------------------------
 #
 # Requirements:
@@ -13,11 +13,11 @@
 # tar
 # wget
 # Ensure, your OS is allowed to run this script:
-# «sudo chmod +x Open-MPI_install.sh»
+# sudo chmod +x Open-MPI_install.sh
 #
 # ----------------------------------------------------------------------------------------
 #
-# usage: « ./<this script> »
+# usage: ./<this script>
 # The Script will ask for sudo. It's required to create the target directory at /opt
 # ----------------------------------------------------------------------------------------
 #
@@ -25,7 +25,7 @@
 # ----------------------------------------------------------------------------------------
 #
 # Specify the Version of MPI
-VERSION="4.1.0"
+VERSION="4.1.2"
 # ----------------------------------------------------------------------------------------
 #
 # Check whether all programs and compilers are accesible
@@ -58,7 +58,7 @@ PREPREF=/opt/mpi
 sudo mkdir -p $PREPREF >/dev/null 2>/dev/null &
 sudo chown $USER:$USER -R $PREPREF
 
-PREF=$PREPREF/openmpi-NF08-VERSION
+PREF=$PREPREF/openmpi-No-F08-I8-$VERSION
 
 tar -xvzf $filename
 cd openmpi-$VERSION
