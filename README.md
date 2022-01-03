@@ -68,7 +68,11 @@ Add them as a subtree as follows:
 
 ```
 cd <repository root>
-git subtree add --prefix central_src git@github.com:biomechanics-hlrs-gebert/A-CESO-Central_Sources.git  main --squash```
+git subtree add --prefix central_src git@github.com:biomechanics-hlrs-gebert/A-CESO-Central_Sources.git  main --squash
+```
 
 ## Biomechanics @ HLRS
 All of this research is conducted at the *High-Performance Computing Center Stuttgart* (HLRS) in the department of *Numerical Methods and Libraries*. 
+
+## Install Scripts
+For installing Open-MPI, PETSc, Metis and Lapack, install scripts are provided in the corresponding directory. These sources were written without special attention to clean code or user guidance. However they may help installing the dependencies with their specific requirements.
