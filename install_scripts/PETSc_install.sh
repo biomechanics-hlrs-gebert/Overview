@@ -82,8 +82,8 @@ export CC=gcc
 export CC_LINKER_FLAGS="-O3 -Wall"
 export LDFLAGS="-O3"
 export CXX=g++
-export FFLAGS="-O3 -Wall -m64 -fdefault-integer-8 --with-wrapper-fflags=-fdefault-integer-8 --with-wrapper-fcflags=-fdefault-integer-8"
-export FCFLAGS="-O3 -Wall -m64 -fdefault-integer-8"
+export FFLAGS="-O3 -Wall -m64"
+export FCFLAGS="-O3 -Wall -m64"
 export FC_LINKER_FLAGS="-O3 -Wall"
 export CFLAGS="-O3 -Wall -m64"
 export CXXFLAGS="-O3 -Wall -m64"

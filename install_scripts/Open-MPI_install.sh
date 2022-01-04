@@ -4,7 +4,7 @@
 #
 # Author:     Johannes Gebert gebert@hlrs.de
 # Created on: 08.09.2020
-# Last edit:  03.01.2022
+# Last edit:  04.01.2022
 # ----------------------------------------------------------------------------------------
 #
 # Requirements:
@@ -20,14 +20,24 @@
 # usage: ./<this script>
 # The Script will ask for sudo. It's required to create the target directory at /opt
 # ----------------------------------------------------------------------------------------
-#
-# Modify only in case you know what you like to achieve :-)
-# ----------------------------------------------------------------------------------------
-#
 # Specify the Version of MPI
 VERSION="4.1.2"
 # ----------------------------------------------------------------------------------------
+# Specify the general path of your mpi installation
+base_prefix="/opt/mpi"
+# ----------------------------------------------------------------------------------------
+# Specify the integer kind of mpi (4/8, single/double precision) 
+MPI_INT_KIND=4
+# ----------------------------------------------------------------------------------------
+# Specify whether mpi is build wih mpi_f08 or not (0=off, 1=on)
+# ONLY USE MPI_F08 if MPI_INT_KIND=4 or c-integer-kind=8 as well!!
+MPI_F08_SWITCH=0
+# ----------------------------------------------------------------------------------------
 #
+#
+#
+# Modify only in case you know what you like to achieve :-)
+# ----------------------------------------------------------------------------------------
 # Check whether all programs and compilers are accesible
 declare -a BIN=("gfortran" "gcc" "g++" "make" "tar" "wget")
 
@@ -53,12 +63,8 @@ if [ ! -f $PWD/$filename ]; then
 	fi
 fi
 
-PREPREF=/opt/mpi
-
-sudo mkdir -p $PREPREF >/dev/null 2>/dev/null &
-sudo chown $USER:$USER -R $PREPREF
-
-PREF=$PREPREF/openmpi-No-F08-I8-$VERSION
+sudo mkdir -p $base_prefix >/dev/null 2>/dev/null &
+sudo chown $USER:$USER -R $base_prefix
 
 tar -xvzf $filename
 cd openmpi-$VERSION
@@ -66,15 +72,38 @@ cd openmpi-$VERSION
 # Configure MPI.
 # --prefix=<installation directory, independent of this one.>
 # further options via ./configure --help
-export F77=gfortran
-export FC=gfortran
-export CC=gcc
-export CXX=g++
-export FFLAGS="-m64 -fdefault-integer-8 --with-wrapper-fflags=-fdefault-integer-8 --with-wrapper-fcflags=-fdefault-integer-8"
-export FCFLAGS="-m64 -fdefault-integer-8"
-export CFLAGS="-m64"
-export CXXFLAGS="-m64"
-./configure --prefix=$PREF --enable-mpi-fortran=usempi # --enable-mpi-fortran=usempif08
+if [ $MPI_INT_KIND -eq 4 ]; then
+	export F77=gfortran
+	export FC=gfortran
+	export CC=gcc
+	export CXX=g++
+	export FFLAGS="-m64"   # Real kind = 8
+	export FCFLAGS="-m64"  # Real kind = 8
+	export CFLAGS="-m64"   # Real kind = 8
+	export CXXFLAGS="-m64" # Real kind = 8
+	export mpifkkind_path="-I4"
+elif [ $MPI_INT_KIND -eq 8 ]; then
+	export F77=gfortran
+	export FC=gfortran
+	export CC=gcc
+	export CXX=g++
+	export FFLAGS="-m64 -fdefault-integer-8 --with-wrapper-fflags=-fdefault-integer-8 --with-wrapper-fcflags=-fdefault-integer-8"
+	export FCFLAGS="-m64 -fdefault-integer-8"
+	export CFLAGS="-m64"
+	export CXXFLAGS="-m64"
+	export mpifkkind_path="-I8"
+fi
+#
+if [ $MPI_F08_SWITCH -eq 0 ]; then
+	export mpif08_onoff="--enable-mpi-fortran=usempi"
+	export mpif08_path=""
+elif [ $MPI_F08_SWITCH -eq 1 ]; then
+	export mpif08_onoff="--enable-mpi-fortran=usempif08"
+	export mpif08_path="-MPIF08"
+fi
+installprefix=$base_prefix/openmpi$mpif08_path$mpifkkind_path-$VERSION
+
+./configure --prefix=$installprefix 
 
 make && make install
 
@@ -84,10 +113,10 @@ if [ $? -eq 0 ]; then
 	echo "----------------------------------------------------------------------------------------"
 	echo "Open-MPI successfully installed in:"
 	echo ""
-	echo $PREF
+	echo $installprefix
 	echo ""
-	echo "Append "$PREF"/bin to PATH and"
-	echo "Append "$PREF"/lib to LD_LIBRARY_PATH."
+	echo "Append "$installprefix"/bin to PATH and"
+	echo "Append "$installprefix"/lib to LD_LIBRARY_PATH."
 	echo "Often accomplished via an environment script, specifically written to a program."
 else
 	echo "The Installation of Open-MPI failed."
