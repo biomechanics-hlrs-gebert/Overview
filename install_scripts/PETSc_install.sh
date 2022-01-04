@@ -2,9 +2,9 @@
 # ----------------------------------------------------------------------------------------
 # PETSc download, build and install script.
 #
-# Author:          Johannes Gebert »gebert@hlrs.de«
-# Created: on :    14.09.2021
-# Last edit:       14.09.2021
+# Author:     Johannes Gebert »gebert@hlrs.de«
+# Created on: 14.09.2021
+# Last edit:  03.01.2022
 # ----------------------------------------------------------------------------------------
 #
 # Requirements:
@@ -30,7 +30,7 @@
 VERSION="3.15"
 #
 # Target install directory
-PREF=/opt/petsc/petsc-$VERSION
+PREF=/opt/petsc/petsc-I8-$VERSION
 # ----------------------------------------------------------------------------------------
 #
 # Check whether all programs and compilers are accesible
@@ -76,12 +76,22 @@ git clone -b release https://gitlab.com/petsc/petsc.git $builddir
 
 cd $builddir
 
-./configure -prefix=$PREF                      								\
-            --with-fortran-datatypes --with-fortran-interfaces=1            \
-            --with-x=0  --with-64-bit-indices=1                             \
-            CC_LINKER_FLAGS="-O3 -Wall" CFLAGS="-O3 -Wall" LDFLAGS="-O3"    \
-            CXXFLAGS="-O3 -Wall" CXX_LINKER_FLAGS="-O3 -Wall"               \
-            FFLAGS="-O3 -Wall" FC_LINKER_FLAGS="-O3 -Wall"                  \
-            --with-precision=double --with-fortran-datatypes                \
+export F77=gfortran
+export FC=gfortran
+export CC=gcc
+export CC_LINKER_FLAGS="-O3 -Wall"
+export LDFLAGS="-O3"
+export CXX=g++
+export FFLAGS="-O3 -Wall -m64 -fdefault-integer-8 --with-wrapper-fflags=-fdefault-integer-8 --with-wrapper-fcflags=-fdefault-integer-8"
+export FCFLAGS="-O3 -Wall -m64 -fdefault-integer-8"
+export FC_LINKER_FLAGS="-O3 -Wall"
+export CFLAGS="-O3 -Wall -m64"
+export CXXFLAGS="-O3 -Wall -m64"
+export CXX_LINKER_FLAGS="-O3 -Wall"
+
+./configure -prefix=$PREF \
+            --with-fortran-datatypes --with-fortran-interfaces=1 \
+            --with-x=0  --with-64-bit-indices=1 \
+            --with-precision=double --with-fortran-datatypes \
             --with-shared-libraries=0 
 

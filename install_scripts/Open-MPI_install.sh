@@ -70,11 +70,11 @@ export F77=gfortran
 export FC=gfortran
 export CC=gcc
 export CXX=g++
-export FFLAGS="-m64"
-export FCFLAGS="-m64"
+export FFLAGS="-m64 -fdefault-integer-8 --with-wrapper-fflags=-fdefault-integer-8 --with-wrapper-fcflags=-fdefault-integer-8"
+export FCFLAGS="-m64 -fdefault-integer-8"
 export CFLAGS="-m64"
 export CXXFLAGS="-m64"
-./configure --prefix=$PREF # --enable-mpi-fortran=usempif08
+./configure --prefix=$PREF --enable-mpi-fortran=usempi # --enable-mpi-fortran=usempif08
 
 make && make install
 
