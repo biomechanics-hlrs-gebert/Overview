@@ -24,6 +24,13 @@ All programs of my doctoral project rely on a data driven workflow. A deep-dive 
 * Type of bone
 * Consecutive number of the bones
 * Consecutive number of its scan  
+Examples:
+
+|        |                          |
+|--------|--------------------------|
+| FH01-1 | Femoral Head 1, scan 1   |
+| PT02-1 | Proximal Tibia 2, scan 1 |
+| TC00-0 | Test Case                |
 
 ##### Origin  
 * 'cl' - clinical computed tomography scan
