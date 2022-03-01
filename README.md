@@ -1,6 +1,6 @@
 # Gebert Doctoral Project Workflow and Programs
 
-My doctoral project results in a biomechanical workflow, for which this GitHub organization. The repositories for publishing the results are owned by my personal profile and biomechanics-hlrs. 
+My doctoral project results in a biomechanical workflow maintained in this GitHub organization.
 
 Following notation is used to group parts of the workflow:
 | A | Auxiliary programs and modules |
