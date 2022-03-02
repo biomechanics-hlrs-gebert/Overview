@@ -10,12 +10,12 @@ Following notation is used to group parts of the workflow:
 | P | Post processing                |
 
 Example:
-```M-DDTC-Directly-Discretizing-Tensor-Computation```
+```M-DTC-Direct-Tensor-Computation```
 
 The subgroups themselves are not ordered. While the steps of the mechanical analyzation enforce a specific procedure of computations, the image pre-processing and the auxiliary resositories often can be viewed as stand-alone programs.
 
 ## Nomenclature of the data
-All programs of my doctoral project rely on a data driven workflow. A deep-dive into it is found in [A-DDFF-Data-Driven-File-Format](https://github.com/biomechanics-hlrs-gebert/A-DDFF-Data-Driven-File-Format)
+All programs of my doctoral project rely on a data driven workflow.
 
 #### General layout:
 ```Image_Origin_Purpose_Application_Features.Suffix```  
@@ -75,11 +75,11 @@ Add them as a subtree as follows:
 
 ```
 cd <repository root>
-git subtree add --prefix central_src git@github.com:biomechanics-hlrs-gebert/A-CESO-Central_Sources.git  main --squash
+git subtree add --prefix central_src git@github.com:biomechanics-hlrs-gebert/A-GLI-Geberts-Library.git  main --squash
 ```
 
 ## Biomechanics @ HLRS
 All of this research is conducted at the *High-Performance Computing Center Stuttgart* (HLRS) in the department of *Numerical Methods and Libraries*. 
 
 ## Install Scripts
-For installing Open-MPI, PETSc, Metis and Lapack, install scripts are provided in the corresponding directory. These sources were written without special attention to clean code or user guidance. However they may help installing the dependencies with their specific requirements.
+For installing Open-MPI, PETSc, Metis and Lapack, simple install scripts are provided in ```./install_scripts```.
